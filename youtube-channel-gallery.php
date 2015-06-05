@@ -554,8 +554,12 @@ class YoutubeChannelGallery_Widget extends WP_Widget {
 				$ytchag_link_url  = $youtube_url . '/channel/' . $ytchag_user . '/favorites';
 			}
 			if ( $ytchag_feed == 'playlist' ) {
-				$ytchag_rss_url  = $youtube_feed_url . '/playlist_id=' . $ytchag_user . '&max-results='. $ytchag_maxitems;
-				$ytchag_link_url  = $youtube_url . '/playlist?list=' . $ytchag_user;
+				// OLD CODE
+				//$ytchag_rss_url  = $youtube_feed_url . '/playlist_id=' . $ytchag_user . '&max-results='. $ytchag_maxitems;
+				//$ytchag_link_url  = $youtube_url . '/playlist?list=' . $ytchag_user;
+				// NEW CODE
+				$ytchag_rss_url  = $youtube_feed_url . 'playlist_id=' . $ytchag_user . '&max-results='. $ytchag_maxitems;
+				$ytchag_link_url  = $youtube_url . 'playlist?list=' . $ytchag_user;
 			}
 
 			//HTTP API
@@ -645,7 +649,11 @@ class YoutubeChannelGallery_Widget extends WP_Widget {
 
 				// get video player id
 				$yt = $media->children( 'http://gdata.youtube.com/schemas/2007' );
-				$youtubeid = $yt->videoid;
+				//OLD CODE
+				//$youtubeid = $yt->videoid;
+				// NEW ORIGINWEB ... probably a better way to do this, but it works
+				$youtubeid = $entry->id;
+				$youtubeid = str_replace('yt:video:', '', $youtubeid);
 
 				// get video title
 				$title = $media->group->title;
@@ -897,13 +905,18 @@ class YoutubeChannelGallery_Widget extends WP_Widget {
 		foreach ( $thumb_attrs as $row ) {
 
 			if ( $type == 'defaults' ) {
-				if ( in_array( $row['name'], $ytchag_thumb_size_names ) ) {
+				//OLD CODE ... was causing undefined index error
+				//if ( in_array( $row['name'], $ytchag_thumb_size_names ) ) {
+				// NEW ORIGIN WEB (not sure if this is the best, but solved the error)
+				if ( in_array( isset($row['name']), $ytchag_thumb_size_names ) ) {
 					if ( $row['width'] >= $ytchag_thumb_width && $row['height'] >= $ytchag_thumb_height ) {
 						return $row['width'];
 					}
 				}
 			} else {
-				if ( !in_array( $row['name'], $ytchag_thumb_size_names ) ) {
+				//OLD CODE
+				//if ( !in_array( $row['name'], $ytchag_thumb_size_names ) ) {
+				if ( !in_array( isset($row['name']), $ytchag_thumb_size_names ) ) {
 					if ( $row['width'] >= $ytchag_thumb_width && $row['height'] >= $ytchag_thumb_height ) {
 						return $row['width'];
 					}
